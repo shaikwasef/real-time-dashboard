@@ -1,6 +1,6 @@
 cube(`RegulationsImpacted`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alerts where \`RegHub\`.reg_alerts.archived=0 and \`RegHub\`.reg_alerts.alertCategory='EA'`,
-  
+  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory='EA'`,
+
   refreshKey: {
     every: `1 day`
   },
@@ -21,7 +21,7 @@ cube(`RegulationsImpacted`, {
     }
   },
 
- preAggregations: {
+  preAggregations: {
     authDocImpactedRollUp: {
       sqlAlias: `auDocRoll`,
       type: `rollup`,
@@ -46,7 +46,7 @@ cube(`RegulationsImpacted`, {
       },
     },
   },
- 
+
   measures: {
     count: {
       type: `count`,

@@ -1,6 +1,6 @@
 cube(`PenaltiesAndRestitutions`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alerts where \`RegHub\`.reg_alerts.archived=0 and \`RegHub\`.reg_alerts.alertCategory='EA'`,
-  sqlAlias : `PandR`,
+  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory='EA'`,
+  sqlAlias: `PandR`,
 
   refreshKey: {
     every: `1 day`,

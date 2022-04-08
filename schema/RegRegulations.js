@@ -1,5 +1,5 @@
 cube(`RegRegulations`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_alerts_info_regulations\``,
+  sql: `SELECT * FROM \`RegHub\`.\`reg_alert_parents_info_regulations\``,
   sqlAlias : `RegRegl`,
 
   refreshKey: {

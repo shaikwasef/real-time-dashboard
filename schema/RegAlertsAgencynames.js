@@ -1,12 +1,12 @@
 cube(`RegAlertsAgencynames`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_alerts_agencyNames\``,
+  sql: `SELECT * FROM \`RegHub\`.\`reg_alert_parents_agencyNames\``,
   sqlAlias : `RegAlAg`,
 
   refreshKey: {
     every: `1 day`,
   },
 
-preAggregations: {
+  preAggregations: {
     agencyNamesRollUp: {
       sqlAlias: `agencyNamesRP`,
       type: `rollup`,
@@ -18,7 +18,7 @@ preAggregations: {
         every: `1 day`,
       },
     },
-},
+  },
 
   measures: {
     count: {

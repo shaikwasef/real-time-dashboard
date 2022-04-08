@@ -11,10 +11,10 @@ module.exports = {
   //adding tenantId filters in query
   queryTransformer: (query, { securityContext }) => {
     const tenantIds = [defaultTenantId];
-    const sc = securityContext;
-    console.log("tenantIds");
-    console.log(sc);
-    tenantId = sc.tenantId;
+    // const sc = securityContext;
+    // console.log("tenantIds");
+    // console.log(sc);
+    tenantId = "60bdf4253f08118fcef4f30a";
     if (tenantId) {
       console.log("Fetching stats for tenentId", tenantId);
       tenantIds.push(tenantId);

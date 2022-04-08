@@ -1,81 +1,27 @@
 cube(`AlertsMeta`, {
-  sql: `SELECT * FROM \`RegHub\`.alerts_meta`,
-  joins: {
-    tenants: {
-      relationship: `hasOne`,
-      sql: `TRIM(CONVERT(${AlertsMeta.tenantId}, CHAR)) = TRIM(CONVERT( ${tenants}.tenantId, CHAR))`
-    }
-  },
+  sql: `SELECT alertGrpId , alertGrpName FROM \`RegHub\`.alerts_meta`,
+  
   sqlAlias: `aMeta`,
 
   refreshKey: {
     every: `6 hour`
   },
 
-  preAggregations: {
-    alertsByTopicRollUp: {
-      sqlAlias: "alByTopicRP",
-      type: `rollup`,
-      external: true,
-      scheduledRefresh: true,
-      measures: [
-        AlertsMeta.alertsUnread,
-        AlertsMeta.alertsInProcess,
-        AlertsMeta.alertsApplicable,
-      ],
-      dimensions: [AlertsMeta.alertgrpName, tenants.tenantId],
-      refreshKey: {
-        every: `6 hour`,
-      },
-    },
-  },
-   
-  measures: {
-    count: {
-      type: `count`,
-      drillMembers: [alertGrpId, alertgrpName, tenantId, created, updated]
-    },
-    alertsUnread: {
-      type: `sum`,
-      sql: `${CUBE}.\`meta.status.Unread\``,
-    },
-    alertsInProcess: {
-      type: `sum`,
-      sql: `${CUBE}.\`meta.status.In Process\``,
-    },
-    alertsApplicable: {
-      type: `sum`,
-      sql: `${CUBE}.\`meta.status.Applicable\``,
-    },
-    alertsGroupCount: {
-      sql: `${alertsApplicable} + ${alertsUnread} + ${alertsInProcess}`,
-      type: `number`,
-    },
-  },
-
   dimensions: {
     alertGrpId: {
-      sql: `${CUBE}.\`alertGrpId\``,
-      type: `string`
-    },
-    alertgrpName: {
-      sql: `${CUBE}.\`alertGrpName\``,
-      type: `string`
-    },
-    tenantId: {
-      sql: `TRIM(CONVERT(${CUBE}.\`tenantId\`,CHAR))`,
+      sql: `CONVERT(${CUBE}.\`alertGrpId\`,CHAR)`,
       type: `string`,
       primaryKey: true,
       shown: true
     },
-    created: {
-      sql: `created`,
-      type: `time`
+    alertGrpName: {
+      sql: `${CUBE}.\`alertGrpName\``,
+      type: `string`
     },
-    updated: {
-      sql: `updated`,
-      type: `time`
-    }
+    tenantId: {
+      sql: `${CUBE}.\`tenantId\``,
+      type: `string`
+    },
   },
 
   dataSource: `default`

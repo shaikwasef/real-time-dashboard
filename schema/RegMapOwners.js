@@ -1,32 +1,40 @@
 cube(`RegMapOwners`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_map_user\``,
+  sql: `
+  SELECT * FROM (SELECT
+  _id,
+  owner AS user,
+  tenantId,
+  'Tasks' AS item_type
+  FROM ${RegTasks.sql()} as tasksT union all
+  SELECT
+  Risks._id,
+  Users.user AS user,
+  Risks.tenantId,
+  'Risks' AS item_type
+  FROM ${RegRisks.sql()} AS Risks INNER JOIN ${RegMapUser.sql()} AS Users ON Risks._id = Users.srcObject union all
+  SELECT
+  Controls._id,
+  Users.user AS user,
+  Controls.tenantId,
+  'Controls' AS item_type
+  FROM  ${RegControls.sql()} AS Controls INNER JOIN ${RegMapUser.sql()} AS Users ON Controls._id = Users.srcObject
+  ) as MapOwners
+ `,
 
   sqlAlias: `RegMapOw`,
 
   refreshKey: {
     every: `30 minute`,
   },
-  
+
   joins: {
     users: {
       relationship: `belongsTo`,
       sql: `TRIM(CONVERT(${CUBE}.\`user\`, CHAR)) = TRIM(CONVERT(${users}._id, CHAR))`,
     },
-    RegRisks: {
-      relationship: `hasOne`,
-      sql: `${CUBE}.\`srcObject\` = ${RegRisks}._id`,
-    },
-    RegControls: {
-      relationship: `hasOne`,
-      sql: `${CUBE}.\`srcObject\` = ${RegControls}._id`,
-    },
-    RegTasks: {
-      relationship: `hasOne`,
-      sql: `${CUBE}.\`srcObject\`= ${RegTasks}._id`,
-    },
     tenants: {
       relationship: `hasOne`,
-      sql: `TRIM(CONVERT(${CUBE}.\`tenantid\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`,
+      sql: `TRIM(CONVERT(${CUBE}.\`tenantId\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`,
     },
   },
 
@@ -34,28 +42,39 @@ cube(`RegMapOwners`, {
     ownersRollUp: {
       sqlAlias: `oRollUp`,
       external: true,
+      scheduledRefresh: true,
       measures: [
-        RegRisks.count,
-        RegControls.count,
-        RegTasks.count,
+        RegMapOwners.controlCount,
+        RegMapOwners.riskCount,
+        RegMapOwners.taskCount,
         RegMapOwners.total,
       ],
-      dimensions: [tenants.tenantId, RegMapOwners.srcObject, users.fullName],
+      dimensions: [tenants.tenantId, users.fullName],
       refreshKey: {
         every: "1 hour",
       },
-      scheduledRefresh:true,
     },
   },
 
   measures: {
     count: {
       type: `count`,
-      drillMembers: [srcObject, ownerId, _id],
+      drillMembers: [tenantId],
+    },
+    taskCount: {
+      type: `count`,
+      filters: [{ sql: `${CUBE}.item_type = 'Tasks'` }],
+    },
+    riskCount: {
+      type: `count`,
+      filters: [{ sql: `${CUBE}.item_type = 'Risks'` }],
+    },
+    controlCount: {
+      type: `count`,
+      filters: [{ sql: `${CUBE}.item_type = 'Controls'` }],
     },
     total: {
-      type: `number`,
-      sql: `${RegRisks.count} + ${RegControls.count} + ${RegTasks.count}`,
+      type: `count`,
     },
   },
 
@@ -64,11 +83,6 @@ cube(`RegMapOwners`, {
       sql: `${CUBE}.\`_id\``,
       type: `string`,
       primaryKey: true,
-    },
-    srcObject: {
-      sql: `${CUBE}.\`srcObject\``,
-      type: `string`,
-      title: `Source`,
     },
     ownerId: {
       sql: `${CUBE}.\`user\``,

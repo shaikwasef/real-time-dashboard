@@ -1,5 +1,5 @@
 cube(`RegHarmonizedActionType`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_alerts_info_harmonizedActionType\``,
+  sql: `SELECT * FROM \`RegHub\`.\`reg_alert_parents_info_harmonizedActionType\``,
   sqlAlias : `RegHaAcType`,
 
   refreshKey: {
@@ -12,8 +12,8 @@ cube(`RegHarmonizedActionType`, {
       sql: `${CUBE._id} = ${RegAlertsEnforcementActions._id}`
     }
   },
-  
-preAggregations: {
+
+  preAggregations: {
     harmonizedActionsRollUp: {
       sqlAlias: `hrmActionRP`,
       type: `rollup`,
@@ -27,7 +27,7 @@ preAggregations: {
         every: `1 day`,
       },
     },
-},
+  },
 
   measures: {
     count: {

@@ -1,100 +1,30 @@
 cube(`RegJurisdictions`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_jurisdictions`,
-  sqlAlias : `RegJur`,
-  joins: {},
+  sql: `SELECT jurisdictionId , displayName , tenantId FROM \`RegHub\`.reg_jurisdictions`,
+  sqlAlias: `RegJur`,
 
-  measures: {
-    count: {
-      type: `count`,
-      drillMembers: [
-        displayname,
-        hidden,
-        jurisdictionid,
-        shortname,
-        tenantid,
-        title,
-        created,
-        updated
-      ]
-    }
+  refreshKey: {
+    every: `6 hour`,
+  },
+
+  joins: {
+    tenants: {
+      relationship: `belongsTo`,
+      sql: `TRIM(CONVERT(${CUBE}.\`tenantid\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`
+    },
   },
 
   dimensions: {
-    details: {
-      sql: `details`,
-      type: `string`
-    },
-    displayname: {
-      sql: `${CUBE}.\`displayName\``,
-      type: `string`
-    },
-    hidden: {
-      sql: `hidden`,
-      type: `string`
-    },
-    intro: {
-      sql: `intro`,
-      type: `string`
-    },
-    jurisdictionid: {
+    jurisdictionId: {
       sql: `${CUBE}.\`jurisdictionId\``,
+      title: `Jurisdiction`,
       type: `string`,
       primaryKey: true
     },
-    mapcode: {
-      sql: `${CUBE}.\`mapCode\``,
+    displayName: {
+      sql: `${CUBE}.\`displayName\``,
+      title: `Jurisdiction Name`,
       type: `string`
     },
-    order: {
-      sql: `order`,
-      type: `string`
-    },
-    parentjurisdiction: {
-      sql: `${CUBE}.\`parentJurisdiction\``,
-      type: `string`
-    },
-    references: {
-      sql: `references`,
-      type: `string`
-    },
-    regioncode: {
-      sql: `${CUBE}.\`regionCode\``,
-      type: `string`
-    },
-    shortname: {
-      sql: `${CUBE}.\`shortName\``,
-      type: `string`
-    },
-    tenantid: {
-      sql: `${CUBE}.\`tenantId\``,
-      type: `string`
-    },
-    title: {
-      sql: `title`,
-      type: `string`
-    },
-    uimapcode: {
-      sql: `${CUBE}.\`uiMapCode\``,
-      type: `string`
-    },
-    writeupDetails: {
-      sql: `${CUBE}.\`writeup.details\``,
-      type: `string`,
-      title: `Writeup.details`
-    },
-    writeupIntro: {
-      sql: `${CUBE}.\`writeup.intro\``,
-      type: `string`,
-      title: `Writeup.intro`
-    },
-    created: {
-      sql: `created`,
-      type: `time`
-    },
-    updated: {
-      sql: `updated`,
-      type: `time`
-    }
   },
 
   dataSource: `default`

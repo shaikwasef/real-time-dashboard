@@ -1,6 +1,6 @@
 cube(`EnforcementActionsReport`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alerts where \`RegHub\`.reg_alerts.archived=0 and \`RegHub\`.reg_alerts.alertCategory='EA'`,
-  sqlAlias : `eARep`,
+  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory='EA'`,
+  sqlAlias: `eARep`,
 
   refreshKey: {
     every: `1 day`
@@ -20,7 +20,6 @@ cube(`EnforcementActionsReport`, {
       sql: `${CUBE}._id = ${RegAlertsAgencynames}._id`
     }
   },
-
 
   preAggregations: {
     noEnforcementActionsReportRollUp: {
@@ -51,7 +50,7 @@ cube(`EnforcementActionsReport`, {
     },
     AggregatedPenalties: {
       sql: `COALESCE(${CUBE}.\`info.penaltyAmount.value\` + ${CUBE}.\`info.restitutionAmount.value\`, ${CUBE}.\`info.restitutionAmount.value\`, ${CUBE}.\`info.penaltyAmount.value\` , 0) `,
-      type: `sum`,
+      type: `sum`
     }
   },
 
