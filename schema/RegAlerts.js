@@ -1,5 +1,5 @@
 cube(`RegAlerts`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory !='EA'`,
+  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0`,
   sqlAlias: `RegAl`,
 
   refreshKey: {

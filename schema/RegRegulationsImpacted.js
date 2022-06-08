@@ -1,15 +1,15 @@
 cube(`RegulationsImpacted`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory='EA'`,
+  sql: `SELECT * FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
+  sqlAlias: `RegImp`,
 
   refreshKey: {
     every: `1 day`
   },
 
-  sqlAlias: `RegImp`,
   joins: {
     tenants: {
       relationship: `hasOne`,
-      sql: `TRIM(CONVERT(${CUBE}.\`tenantid\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`
+      sql: `TRIM(CONVERT(${CUBE}.\`tenantId\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`
     },
     users: {
       relationship: `belongsTo`,
@@ -17,7 +17,7 @@ cube(`RegulationsImpacted`, {
     },
     RegRegulations: {
       relationship: `hasMany`,
-      sql: `${CUBE}._id = ${RegRegulations}._id`
+      sql: `${CUBE._id} = ${RegRegulations._id}`
     }
   },
 
@@ -50,7 +50,7 @@ cube(`RegulationsImpacted`, {
   measures: {
     count: {
       type: `count`,
-      drillMembers: [tenantid]
+      drillMembers: [tenantId]
     }
   },
   dimensions: {
@@ -63,7 +63,7 @@ cube(`RegulationsImpacted`, {
       sql: `${CUBE}.\`effectiveDate\``,
       type: `time`
     },
-    tenantid: {
+    tenantId: {
       sql: `${CUBE}.\`tenantId\``,
       type: `string`
     }

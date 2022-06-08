@@ -1,6 +1,6 @@
 cube(`RegRegulations`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_alert_parents_info_regulations\``,
-  sqlAlias : `RegRegl`,
+  sql: `SELECT * FROM \`RegHub\`.\`reg_ea_alerts_info_regulations\``,
+  sqlAlias: `RegRegl`,
 
   refreshKey: {
     every: `1 day`

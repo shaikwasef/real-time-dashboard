@@ -1,9 +1,9 @@
 cube(`RegAlertsEnforcementActions`, {
-  sql: `SELECT _id , tenantId , owner FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory ='EA'`,
-  sqlAlias : `RegAlEnfAc`,
+  sql: `SELECT _id , tenantId , owner FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
+  sqlAlias: `RegAlEnfAc`,
 
   refreshKey: {
-    every: `1 day`
+    every: `1 day`,
   },
 
   joins: {
@@ -15,10 +15,10 @@ cube(`RegAlertsEnforcementActions`, {
       relationship: `hasOne`,
       sql: `TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${tenants.tenantId}, CHAR))`
     },
-    RegAlertsAgencynames: {
+    RegAlertsAgencynamesEnfActions: {
       relationship: `hasMany`,
-      sql: `${CUBE._id} = ${RegAlertsAgencynames._id}`
-    },
+      sql: `${CUBE._id} = ${RegAlertsAgencynamesEnfActions._id}`
+    }
   },
 
   preAggregations: {
@@ -35,18 +35,18 @@ cube(`RegAlertsEnforcementActions`, {
       sqlAlias: `HAGroll`,
       type: `rollupJoin`,
       external: true,
-      measures: [RegAlertsAgencynames.count],
+      measures: [RegAlertsAgencynamesEnfActions.count],
       dimensions: [
-        RegAlertsAgencynames.agencyNames,
+        RegAlertsAgencynamesEnfActions.agencyNames,
         RegHarmonizedActionType.harmonizedActionType,
         tenants.tenantId,
       ],
       rollups: [
-        RegAlertsAgencynames.agencyNamesRollUp,
+        RegAlertsAgencynamesEnfActions.agencyNamesRollUp,
         RegHarmonizedActionType.harmonizedActionsRollUp,
         RegAlertsEnforcementActions.regAlertsEnfActionsRollUp,
       ],
-    }
+    },
   },
 
   measures: {

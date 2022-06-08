@@ -1,5 +1,5 @@
 cube(`PenaltiesAndRestitutions`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0 and \`RegHub\`.reg_alert_parents.alertCategory='EA'`,
+  sql: `SELECT * FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
   sqlAlias: `PandR`,
 
   refreshKey: {
@@ -15,10 +15,10 @@ cube(`PenaltiesAndRestitutions`, {
       relationship: `belongsTo`,
       sql: `TRIM(CONVERT(${CUBE}.\`owner\`, CHAR)) = TRIM(CONVERT(${users}._id, CHAR))`,
     },
-    RegAlertsAgencynames: {
+    RegAlertsAgencynamesEnfActions: {
       relationship: `hasMany`,
-      sql: `${CUBE}._id = ${RegAlertsAgencynames}._id`,
-    },
+      sql: `${CUBE}._id = ${RegAlertsAgencynamesEnfActions}._id`
+    }
   },
 
   measures: {

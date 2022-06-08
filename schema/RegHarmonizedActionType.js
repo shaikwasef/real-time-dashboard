@@ -1,11 +1,11 @@
 cube(`RegHarmonizedActionType`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_alert_parents_info_harmonizedActionType\``,
-  sqlAlias : `RegHaAcType`,
+  sql: `SELECT * FROM \`RegHub\`.\`reg_ea_alerts_info_harmonizedActionType\``,
+  sqlAlias: `RegHaAcType`,
 
   refreshKey: {
-    every: `1 day`,
+    every: `1 day`
   },
-  
+
   joins: {
     RegAlertsEnforcementActions: {
       relationship: `belongsTo`,
@@ -32,8 +32,8 @@ cube(`RegHarmonizedActionType`, {
   measures: {
     count: {
       type: `count`,
-      drillMembers: [harmonizedActionType, _id]
-    }
+      drillMembers: [harmonizedActionType, _id],
+    },
   },
 
   dimensions: {
