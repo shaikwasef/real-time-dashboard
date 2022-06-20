@@ -1,11 +1,12 @@
 cube(`AlertsByTopic`, {
-  sql: `
+	sql: `
   SELECT * FROM ((SELECT
   status,
   grpIds,
   tenantId,
-  alertCategory
-  FROM ${RegAlerts.sql()} as alerts INNER JOIN ${RegAlertsGrpIds.sql()} as GrpIds ON alerts._id = GrpIds._id )
+  alertCategory,
+  publishedDate
+  FROM \`RegHub\`.reg_alert_parents as alerts INNER JOIN (SELECT _id as Id , grpIds  FROM \`RegHub\`.\`reg_alert_parents_grpIds\`) as GrpIds ON alerts._id = GrpIds.Id )
   ) as AlertsByTopic INNER JOIN ${AlertsMeta.sql()} as AlertsMeta On AlertsByTopic.grpIds = CONVERT(AlertsMeta.alertGrpId,CHAR)`,
 
   refreshKey: {
@@ -36,6 +37,14 @@ cube(`AlertsByTopic`, {
         AlertsByTopic.alertCategory,
         tenants.tenantId
       ],
+      timeDimension: AlertsByTopic.publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`,
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`,
+      },
       refreshKey: {
         every: `6 hour`,
       }
@@ -90,6 +99,11 @@ cube(`AlertsByTopic`, {
       sql: `CONVERT(${CUBE}.\`alertGrpName\`,CHAR)`,
       type: `string`,
       title: `Group Name`
+    },
+    publishedDate: {
+      sql: `publishedDate`,
+      type: `time`,
+      title : `Published Date`
     },
     alertCategory: {
       sql: `${CUBE}.\`alertCategory\``,

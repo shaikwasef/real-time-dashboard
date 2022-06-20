@@ -3,7 +3,7 @@ cube(`RegulationsImpacted`, {
   sqlAlias: `RegImp`,
 
   refreshKey: {
-    every: `1 day`
+    every: `1 day`,
   },
 
   joins: {
@@ -34,9 +34,9 @@ cube(`RegulationsImpacted`, {
         tenants.tenantId,
       ],
       timeDimension: CUBE.effectiveDate,
-      granularity: `month`,
+      granularity: `day`,
       refreshKey: {
-        every: "1 hour",
+        every: "1 day"
       },
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`,

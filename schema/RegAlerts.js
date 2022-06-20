@@ -69,8 +69,16 @@ cube(`RegAlerts`, {
         RegAlerts.alertCategory,
         RegCorpus.corpusName,
       ],
+      timeDimension: publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`
+      },
       refreshKey: {
-        every: `6 hour`,
+        every: `6 hour`
       }
     },
     alertsByAgencyRollUp: {
@@ -89,9 +97,17 @@ cube(`RegAlerts`, {
         RegAlerts.alertCategory,
         RegAlertsAgencynames.agencyNames,
       ],
+      timeDimension: publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`
+      },
       refreshKey: {
-        every: `6 hour`,
-      }
+        every: `6 hour`
+      },
     },
     alertsByUsersRollUp: {
       sqlAlias: "alByUsrsRP",
@@ -105,8 +121,16 @@ cube(`RegAlerts`, {
         RegAlerts.totalCount,
       ],
       dimensions: [tenants.tenantId, users.fullName, RegAlerts.alertCategory],
+      timeDimension: publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`
+      },
       refreshKey: {
-        every: `6 hour`,
+        every: `6 hour`
       }
     },
     feedPerJurisdictionRollUp: {
@@ -156,7 +180,7 @@ cube(`RegAlerts`, {
         RegAlerts.alertCategory,
       ],
       timeDimension: publishedDate,
-      granularity: `month`,
+      granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`,
       },
@@ -182,6 +206,14 @@ cube(`RegAlerts`, {
         RegJurisdictions.displayName,
         RegAlerts.alertCategory,
       ],
+      timeDimension: publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`,
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`,
+      },
       refreshKey: {
         every: `6 hour`,
       }
@@ -295,8 +327,8 @@ cube(`RegAlerts`, {
 
   segments: {
     filterExcludedAlerts: {
-      sql: `${CUBE}.\`status\` != 'Excluded'`,
-    },
+      sql: `${CUBE}.\`status\` != 'Excluded'`
+    }
   },
 
   dimensions: {
@@ -370,5 +402,5 @@ cube(`RegAlerts`, {
     },
   },
 
-  dataSource: `default`
+  dataSource: `default`,
 });

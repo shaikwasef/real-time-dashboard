@@ -1,5 +1,5 @@
 cube(`RegAlertsEnforcementActions`, {
-  sql: `SELECT _id , tenantId , owner FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
+  sql: `SELECT _id , tenantId , owner , effectiveDate FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
   sqlAlias: `RegAlEnfAc`,
 
   refreshKey: {
@@ -27,6 +27,14 @@ cube(`RegAlertsEnforcementActions`, {
       external: true,
       scheduledRefresh: true,
       dimensions: [RegAlertsEnforcementActions._id, tenants.tenantId],
+      timeDimension: RegAlertsEnforcementActions.effectiveDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`,
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`,
+      },
       refreshKey: {
         every: `1 day`,
       }
@@ -46,6 +54,17 @@ cube(`RegAlertsEnforcementActions`, {
         RegHarmonizedActionType.harmonizedActionsRollUp,
         RegAlertsEnforcementActions.regAlertsEnfActionsRollUp,
       ],
+      timeDimension: RegAlertsEnforcementActions.effectiveDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`
+      },
+      refreshKey: {
+        every: `1 day`
+      }
     },
   },
 
@@ -69,6 +88,10 @@ cube(`RegAlertsEnforcementActions`, {
     tenantId: {
       sql: `${CUBE}.\`tenantId\``,
       type: `string`
+    },
+    effectiveDate: {
+      sql: `${CUBE}.\`effectiveDate\``,
+      type: `time`
     }
   },
 

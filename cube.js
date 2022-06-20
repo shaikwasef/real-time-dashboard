@@ -14,20 +14,20 @@ module.exports = {
     // const sc = securityContext;
     // console.log("tenantIds");
     // console.log(sc);
-    // tenantId = "60bdf4253f08118fcef4f30a";
-    // if (tenantId) {
-    //   console.log("Fetching stats for tenentId", tenantId);
-    //   tenantIds.push(tenantId);
-    // } else {
-    //   console.error(
-    //     "TenantId is not provided, fetching stats for default tenantId"
-    //   );
-    // }
-    // query.filters.push({
-    //   member: "tenants.tenantId",
-    //   operator: "equals",
-    //   values: tenantIds,
-    // });
+    tenantId = "60bdf4253f08118fcef4f30a";
+    if (tenantId) {
+      console.log("Fetching stats for tenentId", tenantId);
+      tenantIds.push(tenantId);
+    } else {
+      console.error(
+        "TenantId is not provided, fetching stats for default tenantId"
+      );
+    }
+    query.filters.push({
+      member: "tenants.tenantId",
+      operator: "equals",
+      values: tenantIds,
+    });
     return query;
   },
 

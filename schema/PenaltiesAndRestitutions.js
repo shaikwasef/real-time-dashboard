@@ -1,5 +1,8 @@
 cube(`PenaltiesAndRestitutions`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
+  sql: ` SELECT * FROM ((SELECT *  FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0) as enfAlerts  
+  INNER JOIN (SELECT _id as Id , agencyNames  FROM \`RegHub\`.\`reg_ea_alerts_agencyNames\`) as enfAlertNames 
+  ON enfAlerts._id = enfAlertNames.Id) `,
+  
   sqlAlias: `PandR`,
 
   refreshKey: {
@@ -14,10 +17,28 @@ cube(`PenaltiesAndRestitutions`, {
     users: {
       relationship: `belongsTo`,
       sql: `TRIM(CONVERT(${CUBE}.\`owner\`, CHAR)) = TRIM(CONVERT(${users}._id, CHAR))`,
-    },
-    RegAlertsAgencynamesEnfActions: {
-      relationship: `hasMany`,
-      sql: `${CUBE}._id = ${RegAlertsAgencynamesEnfActions}._id`
+    }
+  },
+
+  preAggregations: {
+    penaltiesAndRestitutionsReportRollUp : {
+      sqlAlias: `pandRRepRP`,
+      type: `rollup`,
+      external: true,
+      scheduledRefresh: true,
+      measures: [PenaltiesAndRestitutions.amount],
+      dimensions: [PenaltiesAndRestitutions.agencyNames , PenaltiesAndRestitutions.currency , tenants.tenantId],
+      timeDimension: PenaltiesAndRestitutions.effectiveDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`,
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`,
+      },
+      refreshKey: {
+        every: `1 day`,
+      }
     }
   },
 
@@ -49,6 +70,11 @@ cube(`PenaltiesAndRestitutions`, {
     tenantid: {
       sql: `${CUBE}.\`tenantId\``,
       type: `string`,
+    },
+    agencyNames: {
+      sql: `${CUBE}.\`agencyNames\``,
+      type: `string`,
+      title: `agencyNames`
     },
   },
 });

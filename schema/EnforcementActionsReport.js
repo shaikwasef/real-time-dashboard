@@ -1,5 +1,8 @@
 cube(`EnforcementActionsReport`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0 `,
+  sql: ` SELECT * FROM ((SELECT *  FROM \`RegHub\`.reg_ea_alerts where \`RegHub\`.reg_ea_Alerts.archived=0) as enfAlerts  
+  INNER JOIN (SELECT _id as Id , agencyNames  FROM \`RegHub\`.\`reg_ea_alerts_agencyNames\`) as enfAlertNames 
+  ON enfAlerts._id = enfAlertNames.Id) `,
+  
   sqlAlias: `eARep`,
 
   refreshKey: {
@@ -15,22 +18,19 @@ cube(`EnforcementActionsReport`, {
       relationship: `belongsTo`,
       sql: `TRIM(CONVERT(${CUBE}.\`owner\`, CHAR)) = TRIM(CONVERT(${users}._id, CHAR))`
     },
-    RegAlertsAgencynamesEnfActions: {
-      relationship: `hasMany`,
-      sql: `${CUBE}._id = ${RegAlertsAgencynamesEnfActions}._id`
-    },
   },
 
   preAggregations: {
-    noEnforcementActionsReportRollUp: {
-      sqlAlias: `noEnfRP`,
+    //roll up for # of enforcement actions and enforcement actions report 
+    enforcementActionsReportRollUp : {
+      sqlAlias: `enfAcRepRP`,
       type: `rollup`,
       external: true,
       scheduledRefresh: true,
-      measures: [EnforcementActionsReport.count],
-      dimensions: [RegAlertsAgencynames.agencyNames, tenants.tenantId],
+      measures: [EnforcementActionsReport.count , EnforcementActionsReport.AggregatedPenalties],
+      dimensions: [EnforcementActionsReport.agencyNames , EnforcementActionsReport.currency , tenants.tenantId],
       timeDimension: EnforcementActionsReport.effectiveDate,
-      granularity: `month`,
+      granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`,
       },
@@ -40,7 +40,7 @@ cube(`EnforcementActionsReport`, {
       refreshKey: {
         every: `1 day`,
       },
-    },
+    }
   },
 
   measures: {
@@ -71,6 +71,11 @@ cube(`EnforcementActionsReport`, {
     tenantid: {
       sql: `${CUBE}.\`tenantId\``,
       type: `string`
-    }
+    },
+    agencyNames: {
+      sql: `${CUBE}.\`agencyNames\``,
+      type: `string`,
+      title: `agencyNames`
+    },
   }
 });

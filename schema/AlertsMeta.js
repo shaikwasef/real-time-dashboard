@@ -1,5 +1,5 @@
 cube(`AlertsMeta`, {
-  sql: `SELECT alertGrpId , alertGrpName FROM \`RegHub\`.alerts_meta`,
+  sql: `SELECT alertGrpId , alertGrpName FROM \`RegHub\`.alerts_meta where \`RegHub\`.alerts_meta.grpType != "jurisdiction"`,
   
   sqlAlias: `aMeta`,
 
