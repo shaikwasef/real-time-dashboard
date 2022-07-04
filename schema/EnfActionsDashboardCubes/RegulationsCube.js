@@ -1,9 +1,12 @@
-cube(`RegRegulations`, {
-  sql: `SELECT * FROM \`RegHub\`.\`reg_ea_alerts_info_regulations\``,
-  sqlAlias: `RegRegl`,
+import { ENFORCEMENT_CUBE_REFRESH_KEY_TIME } from "./cube-constants";
+import { regulationsCollection } from "./collections";
+
+cube(`RegulationsCube`, {
+  sql: `SELECT * FROM ${regulationsCollection}`,
+  sqlAlias: `ReglCube`,
 
   refreshKey: {
-    every: `1 day`
+    every: `${ENFORCEMENT_CUBE_REFRESH_KEY_TIME}`
   },
 
   measures: {
@@ -25,7 +28,7 @@ cube(`RegRegulations`, {
       title: `Citations`
     },
     _id: {
-      sql: `${CUBE}.\`_id\``,
+      sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
       primaryKey: true
     }

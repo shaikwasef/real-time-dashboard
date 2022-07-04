@@ -1,75 +1,56 @@
-cube(`RegAlerts`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_alert_parents where \`RegHub\`.reg_alert_parents.archived=0`,
-  sqlAlias: `RegAl`,
+import {alertsCollection  } from './collections';
+import { ALERT_CUBE_REFRESH_KEY_TIME , ALERT_CUBE_PRE_AGG_REFRESH_KEY, ALERT_CUBE_PRE_AGG_REFRESH_KEY_WORKFLOW } from './cube-constants';
+
+cube(`AlertsCube`, {
+  sql: `SELECT * FROM ${alertsCollection} where ${alertsCollection}.archived=0`,
+
+  sqlAlias: `AlCube`,
 
   refreshKey: {
-    every: `6 hour`
+    every: ALERT_CUBE_REFRESH_KEY_TIME
   },
 
   joins: {
-    RegCorpus: {
-      relationship: `belongsTo`,
-      sql: `${CUBE}.\`info.repo\` = ${RegCorpus}.id`
-    },
-    RegAlertsAgencynames: {
-      relationship: `belongsTo`,
-      sql: `${CUBE}.\`_id\` = ${RegAlertsAgencynames}._id`
-    },
-    users: {
-      relationship: `belongsTo`,
-      sql: `TRIM(CONVERT(${CUBE}.\`owner\`, CHAR)) = TRIM(CONVERT(${users}._id, CHAR))`
-    },
-    alertsByGeography: {
-      relationship: `belongsTo`,
-      sql: `${CUBE}.\`jurisdiction\` = ${alertsByGeography}.descendantJurisId`
-    },
-    tenants: {
+		Tenants: {
       relationship: `hasOne`,
-      sql: `TRIM(CONVERT(${CUBE}.\`tenantid\`, CHAR)) = TRIM(CONVERT(${tenants}.tenantId, CHAR))`
+      sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
     },
-    RegJurisdictions: {
+		Users: {
+      relationship: `belongsTo`,
+      sql: `TRIM(CONVERT(${CUBE.owner}, CHAR)) = TRIM(CONVERT(${Users._id}, CHAR))`
+    },
+    CorpusCube: {
+      relationship: `belongsTo`,
+      sql: `${CUBE.infoRepo}= ${CorpusCube}.id`
+    },
+    JurisdictionsCube: {
       relationship: `hasOne`,
-      sql: `${CUBE}.\`jurisdiction\` = ${RegJurisdictions.jurisdictionId}`
+      sql: `${CUBE.jurisdiction} = ${JurisdictionsCube.jurisdictionId}`
+    },
+		AlertAgencyNamesCube: {
+      relationship: `belongsTo`,
+      sql: `${CUBE._id} = ${AlertAgencyNamesCube._id}`
     }
   },
 
   preAggregations: {
-    alertsByStatusReportsRollUp: {
-      sqlAlias: "alByStatRepsRP",
-      type: `rollup`,
-      external: true,
-      scheduledRefresh: true,
-      measures: [RegAlerts.unread, RegAlerts.applicable, RegAlerts.inProcess],
-      dimensions: [tenants.tenantId, RegAlerts.alertCategory],
-      timeDimension: publishedDate,
-      granularity: `day`,
-      buildRangeStart: {
-        sql: `SELECT NOW() - interval '365 day'`,
-      },
-      buildRangeEnd: {
-        sql: `SELECT NOW()`,
-      },
-      refreshKey: {
-        every: `6 hour`,
-      }
-    },
-    alertsByCorpusReportRollUp: {
-      sqlAlias: "alByCorpRepsRP",
+    alertsByCorpusAndStatsReportRollUp: {
+      sqlAlias: "alByCorpStatRepsRP",
       type: `rollup`,
       external: true,
       scheduledRefresh: true,
       measures: [
-        RegAlerts.unread,
-        RegAlerts.applicable,
-        RegAlerts.inProcess,
-        RegAlerts.totalCount,
+        AlertsCube.unread,
+        AlertsCube.applicable,
+        AlertsCube.inProcess,
+        AlertsCube.totalCount
       ],
       dimensions: [
-        tenants.tenantId,
-        RegAlerts.alertCategory,
-        RegCorpus.corpusName,
+        Tenants.tenantId,
+        AlertsCube.alertCategory,
+        CorpusCube.corpusName
       ],
-      timeDimension: publishedDate,
+      timeDimension: AlertsCube.publishedDate,
       granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`
@@ -78,7 +59,7 @@ cube(`RegAlerts`, {
         sql: `SELECT NOW()`
       },
       refreshKey: {
-        every: `6 hour`
+        every: ALERT_CUBE_PRE_AGG_REFRESH_KEY
       }
     },
     alertsByAgencyRollUp: {
@@ -87,17 +68,17 @@ cube(`RegAlerts`, {
       external: true,
       scheduledRefresh: true,
       measures: [
-        RegAlerts.unread,
-        RegAlerts.applicable,
-        RegAlerts.inProcess,
-        RegAlerts.totalCount,
+        AlertsCube.unread,
+        AlertsCube.applicable,
+        AlertsCube.inProcess,
+        AlertsCube.totalCount
       ],
       dimensions: [
-        tenants.tenantId,
-        RegAlerts.alertCategory,
-        RegAlertsAgencynames.agencyNames,
+        Tenants.tenantId,
+        AlertsCube.alertCategory,
+        AlertAgencyNamesCube.agencyNames
       ],
-      timeDimension: publishedDate,
+      timeDimension: AlertsCube.publishedDate,
       granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`
@@ -106,7 +87,7 @@ cube(`RegAlerts`, {
         sql: `SELECT NOW()`
       },
       refreshKey: {
-        every: `6 hour`
+        every: ALERT_CUBE_PRE_AGG_REFRESH_KEY
       },
     },
     alertsByUsersRollUp: {
@@ -115,13 +96,13 @@ cube(`RegAlerts`, {
       external: true,
       scheduledRefresh: true,
       measures: [
-        RegAlerts.unread,
-        RegAlerts.applicable,
-        RegAlerts.inProcess,
-        RegAlerts.totalCount,
+        AlertsCube.unread,
+        AlertsCube.applicable,
+        AlertsCube.inProcess,
+        AlertsCube.totalCount
       ],
-      dimensions: [tenants.tenantId, users.fullName, RegAlerts.alertCategory],
-      timeDimension: publishedDate,
+      dimensions: [Tenants.tenantId, Users.fullName, AlertsCube.alertCategory],
+      timeDimension: AlertsCube.publishedDate,
       granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`
@@ -130,7 +111,7 @@ cube(`RegAlerts`, {
         sql: `SELECT NOW()`
       },
       refreshKey: {
-        every: `6 hour`
+           every: ALERT_CUBE_PRE_AGG_REFRESH_KEY_WORKFLOW
       }
     },
     feedPerJurisdictionRollUp: {
@@ -139,56 +120,24 @@ cube(`RegAlerts`, {
       external: true,
       scheduledRefresh: true,
       measures: [
-        RegAlerts.unreadFeedCount,
-        RegAlerts.applicableFeedCount,
-        RegAlerts.inProcessFeedCount,
-        RegAlerts.feedCount,
+        AlertsCube.feedCount
       ],
       dimensions: [
-        tenants.tenantId,
-        RegJurisdictions.displayName,
-        RegAlerts.feedName,
-        RegAlerts.alertCategory,
+        Tenants.tenantId,
+        JurisdictionsCube.displayName,
+        AlertsCube.feedName,
+        AlertsCube.alertCategory
       ],
-      timeDimension: publishedDate,
+      timeDimension: AlertsCube.publishedDate,
       granularity: `month`,
       buildRangeStart: {
-        sql: `SELECT NOW() - interval '365 day'`,
+        sql: `SELECT NOW() - interval '365 day'`
       },
       buildRangeEnd: {
-        sql: `SELECT NOW()`,
+        sql: `SELECT NOW()`
       },
       refreshKey: {
-        every: `6 hour`,
-      }
-    },
-    alertsRulesRollUp: {
-      sqlAlias: "alRuleRP",
-      type: `rollup`,
-      external: true,
-      scheduledRefresh: true,
-      measures: [
-        RegAlerts.unread,
-        RegAlerts.applicable,
-        RegAlerts.inProcess,
-        RegAlerts.totalCount,
-      ],
-      dimensions: [
-        tenants.tenantId,
-        RegJurisdictions.displayName,
-        RegAlerts.alertType,
-        RegAlerts.alertCategory,
-      ],
-      timeDimension: publishedDate,
-      granularity: `day`,
-      buildRangeStart: {
-        sql: `SELECT NOW() - interval '365 day'`,
-      },
-      buildRangeEnd: {
-        sql: `SELECT NOW()`,
-      },
-      refreshKey: {
-        every: `6 hour`,
+        every: ALERT_CUBE_PRE_AGG_REFRESH_KEY
       }
     },
     activeBillsByJurisdictionRollUp: {
@@ -197,16 +146,17 @@ cube(`RegAlerts`, {
       external: true,
       scheduledRefresh: true,
       measures: [
-        RegAlerts.unreadBillsCount,
-        RegAlerts.applicableBillsCount,
-        RegAlerts.inProcessBillsCount,
+        AlertsCube.unreadBillsCount,
+        AlertsCube.applicableBillsCount,
+        AlertsCube.inProcessBillsCount,
+				AlertsCube.totalBillsCount
       ],
       dimensions: [
-        tenants.tenantId,
-        RegJurisdictions.displayName,
-        RegAlerts.alertCategory,
+        Tenants.tenantId,
+        JurisdictionsCube.displayName,
+        AlertsCube.alertCategory
       ],
-      timeDimension: publishedDate,
+      timeDimension: AlertsCube.publishedDate,
       granularity: `day`,
       buildRangeStart: {
         sql: `SELECT NOW() - interval '365 day'`,
@@ -215,20 +165,42 @@ cube(`RegAlerts`, {
         sql: `SELECT NOW()`,
       },
       refreshKey: {
-        every: `6 hour`,
+        every: ALERT_CUBE_PRE_AGG_REFRESH_KEY
       }
-    }
+    },
+		alertRulePerJurisdictionRollUp :{
+			sqlAlias: "alRuleJuRP",
+      type: `rollup`,
+      external: true,
+      scheduledRefresh: true,
+			measures: [
+				AlertsCube.unread,
+        AlertsCube.applicable,
+        AlertsCube.inProcess,
+        AlertsCube.totalCount
+      ],
+      dimensions: [
+        AlertsCube.alertType,
+				JurisdictionsCube.displayName
+      ],
+			timeDimension: AlertsCube.publishedDate,
+      granularity: `day`,
+      buildRangeStart: {
+        sql: `SELECT NOW() - interval '365 day'`,
+      },
+      buildRangeEnd: {
+        sql: `SELECT NOW()`,
+      },
+      refreshKey: {
+        every: ALERT_CUBE_PRE_AGG_REFRESH_KEY
+      }
+		}
   },
 
   measures: {
     count: {
       type: `count`,
-      drillMembers: [tenantId, created, updated]
-    },
-    alertsByGeoCount: {
-      type: `count`,
-      filters: [{ sql: `${CUBE}.status <>'Excluded'` }],
-      drillMembers: [tenantId, created, updated, publishedDate, status]
+      drillMembers: [tenantId]
     },
     unread: {
       type: `count`,
@@ -259,31 +231,15 @@ cube(`RegAlerts`, {
       type: `number`,
       title: "totalCount"
     },
-    unreadFeedCount: {
-      sql: `status`,
-      type: `count`,
-      title: "Unread Feed count",
-      filters: [
-        { sql: `${CUBE}.status = 'Unread' and ${CUBE.srcType} = 'FEED'` }
-      ]
-    },
-    inProcessFeedCount: {
+		feedCount: {
       sql: `status`,
       type: `count`,
       title: "In Process Feed count",
       filters: [
-        { sql: `${CUBE}.status = 'In Process' and ${CUBE.srcType} = 'FEED'` }
+        { sql: `${CUBE}.status != 'Excluded' and ${CUBE.srcType} = 'FEED'` }
       ]
     },
-    applicableFeedCount: {
-      sql: `status`,
-      type: `count`,
-      title: "Applicable Feed count",
-      filters: [
-        { sql: `${CUBE}.status = 'Applicable' and ${CUBE.srcType} = 'FEED'` }
-      ]
-    },
-    unreadBillsCount: {
+		unreadBillsCount: {
       sql: `status`,
       type: `count`,
       title: "Unread Bills count",
@@ -293,7 +249,7 @@ cube(`RegAlerts`, {
         }
       ]
     },
-    inProcessBillsCount: {
+		inProcessBillsCount: {
       sql: `status`,
       type: `count`,
       title: "In Process Bills count",
@@ -303,7 +259,7 @@ cube(`RegAlerts`, {
         }
       ]
     },
-    applicableBillsCount: {
+		applicableBillsCount: {
       sql: `status`,
       type: `count`,
       title: "Applicable Bills count",
@@ -313,71 +269,48 @@ cube(`RegAlerts`, {
         }
       ]
     },
-    totalBillsCount: {
+		totalBillsCount: {
       sql: `${unreadBillsCount} + ${applicableBillsCount} + ${inProcessBillsCount}`,
       type: `number`,
       title: "billsCount",
     },
-    feedCount: {
-      sql: `${unreadFeedCount} + ${applicableFeedCount} + ${inProcessFeedCount}`,
-      type: `number`,
-      title: "feedCount",
-    },
-  },
-
-  segments: {
-    filterExcludedAlerts: {
-      sql: `${CUBE}.\`status\` != 'Excluded'`
-    }
   },
 
   dimensions: {
     jurisdiction: {
-      sql: `jurisdiction`,
+      sql: `${CUBE}.\`jurisdiction\``,
       title: `juridiction`,
       type: `string`
     },
     infoRegioncode: {
       sql: `${CUBE}.\`info.regionCode\``,
       type: `string`,
-      title: `Info.regioncode`
+      title: `Info regioncode`
     },
     infoRepo: {
       sql: `${CUBE}.\`info.repo\``,
       type: `string`,
-      title: `Info.repo`
+      title: `Info repo`
     },
     _id: {
-      sql: `_id`,
+      sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
       primaryKey: true
     },
     owner: {
-      sql: `TRIM(CONVERT(owner, CHAR))`,
+      sql: `CONVERT(${CUBE}.\`owner\`, CHAR)`,
       type: `string`
     },
     status: {
-      sql: `status`,
+      sql: `${CUBE}.\`status\``,
       type: `string`
     },
     tenantId: {
       sql: `${CUBE}.\`tenantId\``,
       type: `string`
     },
-    created: {
-      sql: `created`,
-      type: `time`
-    },
-    updated: {
-      sql: `updated`,
-      type: `time`
-    },
-    archived: {
-      sql: `archived`,
-      type: `string`
-    },
     publishedDate: {
-      sql: `publishedDate`,
+      sql: `${CUBE}.\`publishedDate\``,
       type: `time`
     },
     alertCategory: {
@@ -399,7 +332,7 @@ cube(`RegAlerts`, {
       sql: `${CUBE}.\`alertType\``,
       type: `string`,
       title: `Alert Rule`
-    },
+    }
   },
 
   dataSource: `default`,

@@ -1,22 +1,28 @@
-cube(`RegRisks`, {
-  sql: `SELECT * FROM \`RegHub\`.risks where \`RegHub\`.risks.archived = 0`,
+import { risksCollection } from "./collections";
+import { RISK_CUBE_REFRESH_KEY_TIME } from "./cube-constants";
 
-  extends: users,
+cube(`RisksCube`, {
+	
+  sql: `SELECT * FROM ${risksCollection} where ${risksCollection}.archived = 0`,
 
-  sqlAlias : `RegRis`,
+  extends: Users,
+
+  sqlAlias : `RiCube`,
   
   refreshKey: {
-    every: `30 minute`,
+    every: RISK_CUBE_REFRESH_KEY_TIME
   },
+
   measures: {
     count: {
       type: `count`,
       drillMembers: [risks, _id],
     },
   },
+
   dimensions: {
     _id: {
-      sql: `${CUBE}.\`_id\``,
+      sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
       primaryKey: true,
     },

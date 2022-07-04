@@ -1,10 +1,15 @@
-cube(`RegControls`, {
-  sql: `SELECT * FROM \`RegHub\`.controls where \`RegHub\`.controls.archived = 0`,
-  extends: users,
-  sqlAlias : `RegCon`,
+import { CONTROL_CUBE_REFRESH_KEY_TIME } from "./cube-constants";
+import { controlsCollection } from "./collections";
+
+cube(`ControlsCube`, {
+  sql: `SELECT * FROM ${controlsCollection} where ${controlsCollection}.archived = 0`,
+  
+	extends: Users,
+
+  sqlAlias : `ConCube`,
   
   refreshKey: {
-    every: `30 minute`
+    every: CONTROL_CUBE_REFRESH_KEY_TIME
   },
 
   measures: {
@@ -21,7 +26,7 @@ cube(`RegControls`, {
       title: `Controls`
     },
     _id: {
-      sql: `${CUBE}.\`_id\``,
+      sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
       primaryKey: true
     },

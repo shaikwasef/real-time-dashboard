@@ -1,10 +1,13 @@
-cube(`RegRisksByStatus`, {
-  sql: `SELECT * FROM \`RegHub\`.reg_config_status_risk`,
+import { RISK_STATUS_CUBE_REFRESH_KEY_TIME } from "./cube-constants";
+import { risksByStatusCollection } from "./collections";
 
-  sqlAlias : `RegRisByStat`,
+cube(`RisksByStatusCube`, {
+  sql: `SELECT * FROM ${risksByStatusCollection}`,
+
+  sqlAlias : `RisByStatCube`,
   
   refreshKey: {
-    every: `30 minute`,
+    every: RISK_STATUS_CUBE_REFRESH_KEY_TIME
   },
 
   dimensions: {
@@ -20,7 +23,7 @@ cube(`RegRisksByStatus`, {
       shown: true,
     },
     _id: {
-      sql: `${CUBE}.\`_id\``,
+      sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
     },
   },
