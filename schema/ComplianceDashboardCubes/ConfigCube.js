@@ -13,7 +13,7 @@ cube(`ConfigCube`, {
   joins: {
     MapStatusCube: {
       relationship: `hasOne`,
-      sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${MapStatusCube.tenantId}, CHAR))` 
+      sql :`${CUBE.tenantId} = ${MapStatusCube.tenantId}` 
     },
     TasksByStatusCube: {
       relationship: `hasMany`,

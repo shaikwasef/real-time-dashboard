@@ -13,7 +13,7 @@ cube(`CorpusCube`, {
   joins: {
     Tenants: {
       relationship: `hasOne`,
-      sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
+      sql :`${CUBE.tenantId} = ${Tenants.tenantId}` 
     },
   },
   
@@ -34,6 +34,10 @@ cube(`CorpusCube`, {
       sql: `CONVERT(${CUBE}.\`_id\`,CHAR)`,
       type: `string`,
       primaryKey: true
+    },
+		id: {
+      sql: `${CUBE}.id`,
+      type: `string`,
     },
     corpusName: {
       sql: `${CUBE}.\`name\``,

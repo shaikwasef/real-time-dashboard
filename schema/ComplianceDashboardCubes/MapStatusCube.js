@@ -13,7 +13,7 @@ cube(`MapStatusCube`, {
   joins: {
     Tenants: {
       relationship: `hasOne`,
-      sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
+      sql :`${CUBE.tenantId} = ${Tenants.tenantId}` 
     },
     Users: {
       relationship: `belongsTo`,
@@ -48,7 +48,7 @@ cube(`MapStatusCube`, {
   measures: {
     count: {
       type: `count`,
-      drillMembers: [status, _id]
+      drillMembers: [status,srcType]
     }
   },
 

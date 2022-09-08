@@ -13,7 +13,7 @@ cube(`EnforcementActionsCube`, {
   joins: {
     Tenants: {
 			relationship: `hasOne`,
-			sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
+			sql :`${CUBE.tenantId} = ${Tenants.tenantId}` 
 		},
 		Users: {
       relationship: `belongsTo`,
@@ -129,7 +129,7 @@ cube(`EnforcementActionsCube`, {
 			title : `currency`
     },
     tenantId: {
-      sql: `CONVERT(${CUBE}.\`tenantId\`,CHAR)`,
+      sql: `${CUBE}.\`tenantId\``,
       type: `string`
     }
   }

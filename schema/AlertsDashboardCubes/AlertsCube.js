@@ -13,11 +13,7 @@ cube(`AlertsCube`, {
   joins: {
 		Tenants: {
       relationship: `hasOne`,
-      sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
-    },
-		Users: {
-      relationship: `belongsTo`,
-      sql: `TRIM(CONVERT(${CUBE.owner}, CHAR)) = TRIM(CONVERT(${Users._id}, CHAR))`
+      sql :`${CUBE.tenantId} = ${Tenants.tenantId}` 
     },
     CorpusCube: {
       relationship: `belongsTo`,
@@ -30,6 +26,10 @@ cube(`AlertsCube`, {
 		AlertAgencyNamesCube: {
       relationship: `belongsTo`,
       sql: `${CUBE._id} = ${AlertAgencyNamesCube._id}`
+    },
+		AlertsOwnersCube: {
+      relationship: `belongsTo`,
+      sql: `${CUBE._id} = ${AlertsOwnersCube._id}`
     }
   },
 
@@ -200,7 +200,7 @@ cube(`AlertsCube`, {
   measures: {
     count: {
       type: `count`,
-      drillMembers: [tenantId]
+      drillMembers: [alertCategory]
     },
     unread: {
       type: `count`,

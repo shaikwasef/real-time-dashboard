@@ -23,7 +23,7 @@ cube(`AlertsByTopic`, {
   joins: {
     Tenants: {
 			relationship: `hasOne`,
-			sql :`TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))` 
+			sql :`${CUBE.tenantId} = ${Tenants.tenantId}` 
 		}
   },
 

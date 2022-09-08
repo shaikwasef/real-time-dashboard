@@ -13,8 +13,8 @@ cube(`JurisdictionsCube`, {
   joins: {
     Tenants: {
       relationship: `hasOne`,
-      sql: `TRIM(CONVERT(${CUBE.tenantId}, CHAR)) = TRIM(CONVERT(${Tenants.tenantId}, CHAR))`
-    },
+      sql: `${CUBE.tenantId} = ${Tenants.tenantId}`
+    }
   },
 
   dimensions: {
@@ -30,7 +30,7 @@ cube(`JurisdictionsCube`, {
       type: `string`
     },
 		tenantId: {
-      sql: `CONVERT(${CUBE}.\`tenantId\`, CHAR)`,
+      sql: `${CUBE}.\`tenantId\``,
       type: `string`,
 			title: `Tenant Id`
     }

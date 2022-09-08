@@ -4,6 +4,7 @@ export const userCollection = getCollectionString("users");
 export const tenantCollection = getCollectionString("tenants");
 export const alertsCollection = getCollectionString("reg_alert_parents");
 export const agencyNamesCollection =  getCollectionString("reg_alert_parents_agencyNames");
+export const alertsUsersCollection =  getCollectionString("reg_alert_parents_owners");
 export const alertGroupIdsCollection = getCollectionString("reg_alert_parents_grpIds");
 export const alertsMetaCollection =  getCollectionString("alerts_meta");
 export const juridictionsCollection =  getCollectionString("reg_jurisdictions");
