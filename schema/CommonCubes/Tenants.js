@@ -22,7 +22,7 @@ cube(`Tenants`, {
 
   dimensions: {
     tenantId: {
-      sql: `${CUBE}.\`tenantId\``,
+      sql: `CONVERT(${CUBE}.\`tenantId\`,CHAR)`,
       type: `string`,
       primaryKey: true,
       shown: true
