@@ -25,6 +25,9 @@ export const mapUserCollection = getCollectionString("reg_map_user");
 export const impactAssessmentCollection = getCollectionString("reg_assessments");
 export const impactAssessmentOwnersCollection =  getCollectionString("reg_assessments_owners");
 
+export const groupCollection = getCollectionString("reg_groups");
+export const alertsGroupsCollection = getCollectionString("reg_alert_parents_groups");
+
 
 function getCollectionString(collectionName){
 	return `\`${regHubDataBase}\`.\`${collectionName}\``
