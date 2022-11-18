@@ -6,14 +6,13 @@ import {
 
 cube(`AlertsByGroupsCube`, {
 		sql: `SELECT * FROM 
-	((SELECT * FROM ${alertsCollection} 
+	((SELECT _id,publishedDate,status,tenantId,alertCategory,groups FROM ${alertsCollection} 
 		as alerts LEFT JOIN 
 	(SELECT _id as Id , groups FROM ${alertsGroupsCollection}) 
 	as groupIds on alerts._id = groupIds.Id  )) 
 		as alertsGroupCube
 	 INNER JOIN (SELECT _id as grpId , name FROM ${groupCollection}) 
 		as groups on alertsGroupCube.groups = groups.grpId`,
-
 
 	sqlAlias: `AlGrpCube`,
 

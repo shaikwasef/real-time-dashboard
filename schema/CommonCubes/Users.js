@@ -3,7 +3,7 @@ import { USER_CUBE_REFRESH_KEY_TIME } from "./cube-constants";
 
 cube(`Users`, {
   sql: `SELECT _id , fullName , tenantId FROM ${userCollection} `,
-  sqlAlias : `usrs`,
+  // sqlAlias : `usrs`,
 
   refreshKey: {
     every: USER_CUBE_REFRESH_KEY_TIME

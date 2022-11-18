@@ -6,7 +6,7 @@ cube(`AlertsByOwnersCube`, {
 	((SELECT * FROM ${alertsCollection} as alerts INNER JOIN 
 	(SELECT _id as Id , owners FROM ${alertsUsersCollection}) as ownerIds ON alerts._id = ownerIds.Id )) as alertsCube`,
 
-  sqlAlias: `AlOwCube`,
+  // sqlAlias: `AlOwCube`,
 
   refreshKey: {
     every: ALERT_CUBE_REFRESH_KEY_TIME
@@ -23,32 +23,32 @@ cube(`AlertsByOwnersCube`, {
 		}
   },
 
-  preAggregations: {
-    alertsByUsersRollUp: {
-      sqlAlias: "alByUsrsRP",
-      type: `rollup`,
-      external: true,
-      scheduledRefresh: true,
-      measures: [
-        AlertsByOwnersCube.unread,
-        AlertsByOwnersCube.applicable,
-        AlertsByOwnersCube.inProcess,
-        AlertsByOwnersCube.totalCount
-      ],
-      dimensions: [Tenants.tenantId, Users.fullName, AlertsByOwnersCube.alertCategory],
-      timeDimension: AlertsByOwnersCube.publishedDate,
-      granularity: `day`,
-      buildRangeStart: {
-        sql: `SELECT NOW() - interval '365 day'`
-      },
-      buildRangeEnd: {
-        sql: `SELECT NOW()`
-      },
-      refreshKey: {
-           every: ALERT_CUBE_PRE_AGG_REFRESH_KEY_WORKFLOW
-      }
-    }
-	},
+  // preAggregations: {
+  //   alertsByUsersRollUp: {
+  //     sqlAlias: "alByUsrsRP",
+  //     type: `rollup`,
+  //     external: true,
+  //     scheduledRefresh: true,
+  //     measures: [
+  //       AlertsByOwnersCube.unread,
+  //       AlertsByOwnersCube.applicable,
+  //       AlertsByOwnersCube.inProcess,
+  //       AlertsByOwnersCube.totalCount
+  //     ],
+  //     dimensions: [Tenants.tenantId, Users.fullName, AlertsByOwnersCube.alertCategory],
+  //     timeDimension: AlertsByOwnersCube.publishedDate,
+  //     granularity: `day`,
+  //     buildRangeStart: {
+  //       sql: `SELECT NOW() - interval '365 day'`
+  //     },
+  //     buildRangeEnd: {
+  //       sql: `SELECT NOW()`
+  //     },
+  //     refreshKey: {
+  //          every: ALERT_CUBE_PRE_AGG_REFRESH_KEY_WORKFLOW
+  //     }
+  //   }
+	// },
 
   measures: {
     count: {
