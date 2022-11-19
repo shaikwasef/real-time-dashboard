@@ -49,6 +49,10 @@ export const alertsGroupsCollection = getCollectionString(
 	"reg_alert_parents_groups"
 );
 
+export const regMapGenericCollection = getCollectionString("reg_map_generic");
+export const masterDatumCollection = getCollectionString("masterdatum");
+export const regUniregCollection = getCollectionString("unireg");
+
 function getCollectionString(collectionName) {
 	return `\`${regHubDataBase}\`.\`${collectionName}\``;
 }
